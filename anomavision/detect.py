@@ -686,6 +686,21 @@ def run_inference(args):
         )
     logger.info("=" * 60)
 
+    # Per-image y/n verdicts (y = normal, n = anomalous)
+    if not stream_mode and results_accumulator["classifications"]:
+        image_paths = getattr(test_dataset, "image_paths", None)
+        logger.info("=" * 60)
+        logger.info("PER-IMAGE RESULT (y = normal, n = anomaly)")
+        logger.info("=" * 60)
+        for i, cls in enumerate(results_accumulator["classifications"]):
+            name = (
+                os.path.basename(image_paths[i])
+                if image_paths is not None and i < len(image_paths)
+                else f"image_{i}"
+            )
+            logger.info(f"{name}: {'y' if int(cls) == 0 else 'n'}")
+        logger.info("=" * 60)
+
     metrics = {
         "fps": fps,
         "avg_inference_ms": avg_ms,
